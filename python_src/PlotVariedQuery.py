@@ -59,10 +59,10 @@ def PlotVariedQuery(results,options):
             _acc = [results[algorithm_names[i]]['acc'][j] for j in selected_indexes[algorithm_names[i]]]
             
             if algorithm_names[i] == 'RAEWAF':
-                plt.plot(_query_ratio, _regret, lw=line_width,label = 'RAWA', ls=ls[i], color=colors[i], marker = markers[i],\
+                plt.plot(_query_ratio, _acc, lw=line_width,label = 'RAWA', ls=ls[i], color=colors[i], marker = markers[i],\
                     fillstyle=filltypes[i],markersize=marker_size,mew=marker_edge_width[i])
             else:
-                plt.plot(_query_ratio, _regret, lw=line_width,label = algorithm_names[i], ls=ls[i], color=colors[i], marker = markers[i],\
+                plt.plot(_query_ratio, _acc, lw=line_width,label = algorithm_names[i], ls=ls[i], color=colors[i], marker = markers[i],\
                     fillstyle=filltypes[i],markersize=marker_size,mew=marker_edge_width[i])
     plt.xlabel('Number of Control Questions (Percentage) ',fontsize=label_size)
     plt.ylabel('Aggregation Accuracy',fontsize=label_size)
@@ -158,10 +158,10 @@ def PlotVariedQuery(results,options):
             _acc = [results[algorithm_names[i]]['acc'][j] for j in selected_indexes[algorithm_names[i]]]
             
             if algorithm_names[i] == 'RAGF':
-                plt.plot(_query_ratio, _regret, lw=line_width,label = 'RAGA', ls=ls[i], color=colors[i], marker = markers[i],\
+                plt.plot(_query_ratio, _acc, lw=line_width,label = 'RAGA', ls=ls[i], color=colors[i], marker = markers[i],\
                     fillstyle=filltypes[i],markersize=marker_size,mew=marker_edge_width[i])
             else:
-                plt.plot(_query_ratio, _regret, lw=line_width,label = algorithm_names[i], ls=ls[i], color=colors[i], marker = markers[i],\
+                plt.plot(_query_ratio, _acc, lw=line_width,label = algorithm_names[i], ls=ls[i], color=colors[i], marker = markers[i],\
                     fillstyle=filltypes[i],markersize=marker_size,mew=marker_edge_width[i])
     plt.xlabel('Number of Control Questions (Percentage) ',fontsize=label_size)
     plt.ylabel('Aggregation Accuracy',fontsize=label_size)
@@ -176,6 +176,15 @@ def PlotVariedQuery(results,options):
 if __name__ == '__main__':
     results = pickle.load(open('../results/AAAI2018/a8a_0_l0_res.pkl','r'))
     options = pickle.load(open('../results/AAAI2018/a8a_0_l0_options.pkl','r'))
+    num_queries = 5
+    selected_indexes = {}
+    selected_indexes['AEWAF'] = range(0,num_queries)
+    selected_indexes['RAEWAF'] = range(0,num_queries)
+    selected_indexes['REWAF'] = range(0,num_queries)
+    selected_indexes['AGF'] = range(0,num_queries)
+    selected_indexes['RAGF'] = range(0,num_queries)
+    selected_indexes['RGF'] = range(0,num_queries)
+    options['selected_indexes'] = selected_indexes
     import pdb
     pdb.set_trace()
     PlotVariedQuery(results, options)

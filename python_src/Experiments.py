@@ -168,6 +168,16 @@ def BatchVariedQuery(options):
 				pickle.dump(results_all_query,results_out)
 				results_out.close()
 
+				num_queries = options['num_queries']
+				selected_indexes = {}
+				selected_indexes['AEWAF'] = range(0,num_queries)
+				selected_indexes['RAEWAF'] = range(0,num_queries)
+				selected_indexes['REWAF'] = range(0,num_queries)
+				selected_indexes['AGF'] = range(0,num_queries)
+				selected_indexes['RAGF'] = range(0,num_queries)
+				selected_indexes['RGF'] = range(0,num_queries)
+				options['selected_indexes'] = selected_indexes
+
 				option_out =open(options['output_file_name'] + '_options.pkl', 'w') 
 				pickle.dump(options,option_out)
 				option_out.close()
@@ -194,16 +204,7 @@ def BatchVariedQuery(options):
 								fin.write((str(options['deltas'][i])).ljust(0))
 							fin.write('\n')					
 				
-				num_queries = options['num_queries']
-				selected_indexes = {}
-				selected_indexes['AEWAF'] = range(0,num_queries)
-				selected_indexes['RAEWAF'] = range(0,num_queries)
-				selected_indexes['REWAF'] = range(0,num_queries)
-				selected_indexes['AGF'] = range(0,num_queries)
-				selected_indexes['RAGF'] = range(0,num_queries)
-				selected_indexes['RGF'] = range(0,num_queries)
-				options['selected_indexes'] = selected_indexes
-
+				
 				PlotVariedQuery(results_all_query,options)
 
 	print "Finished dataset: ", data_name
@@ -225,12 +226,12 @@ if __name__ == '__main__':
 	options['output_file_extension'] = '.pdf'		
 	
 	options['num_folds'] = 5
-	options['num_queries'] = 30
+	options['num_queries'] = 5
 
 	# threshold to control the query ratio
 	options['deltas'] = np.linspace(0,1,num=options['num_queries'])
-	options['deltas'][3] = 0.1
-	options['deltas'][6] = 0.2	
+	# options['deltas'][3] = 0.1
+	# options['deltas'][6] = 0.2	
 	
 	options['num_noisy_experts_list'] = [0]
 	options['data_names']=['a8a','mushrooms'] 

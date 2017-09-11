@@ -62,12 +62,12 @@ def VariedQuery(options,X_test,Y_test):
 				
 				if alg_name in ['AEWAF','AGF','RAEWAF','RAGF']:
 					forecaster_options['delta'] = options[options['data_name']][alg_name][i]
-				elif alg_name in ['REWAF','RGF']:							
-					forecaster_options['delta']=options['deltas'][i]						
-				elif alg_name =='REWAF1':
-					forecaster_options['delta'] = _results_one_query['RAEWAF']['que'][0]
-				elif alg_name == 'RGF1':
-					forecaster_options['delta'] = _results_one_query['RAGF']['que'][0]														
+				# elif alg_name in ['REWAF','RGF']:							
+					# forecaster_options['delta'] = options['deltas'][i]						
+				elif alg_name =='REWAF':
+					forecaster_options['delta'] = _results_one_query['RAEWAF']['que'][-1]
+				elif alg_name == 'RGF':
+					forecaster_options['delta'] = _results_one_query['RAGF']['que'][-1]														
 				else:
 					forecaster_options['delta'] = delta					
 				
