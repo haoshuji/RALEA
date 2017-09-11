@@ -204,16 +204,18 @@ if __name__ == '__main__':
 			raise
 
 	options['num_true_experts'] = 5
-	options['algorithm_names'] = ['EWAF','AEWAF','RAEWAF','REWAF','GF','AGF','RAGF','RGF','REWAF1','RGF1']
+	options['algorithm_names'] = ['EWAF','AEWAF','RAEWAF','REWAF','GF','AGF','RAGF','RGF']#,'REWAF1','RGF1']
 	options['output_file_extension'] = '.pdf'		
 	
 	options['num_folds'] = 5
 	options['num_queries'] = 30
+
+	# threshold to control the query ratio
 	options['deltas'] = np.linspace(0,1,num=options['num_queries'])
 	options['deltas'][3] = 0.1
 	options['deltas'][6] = 0.2	
 	
 	options['num_noisy_experts_list'] = [0]
-	options['data_names']=['covtype','gisette','codrna'] 
+	options['data_names']=['a8a','mushrooms'] 
 	#['mushrooms','spambase','svmguide1','a8a','w8a_pro']
 	BatchVariedQuery(options)
