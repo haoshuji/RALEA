@@ -164,11 +164,11 @@ def BatchVariedQuery(options):
 				########################################################		
 				
 				# write the varied query ratio to file				
-				results_out =open(options['output_file_name']+'.pkl','w') 
+				results_out =open(options['output_file_name']+'_res.pkl','w') 
 				pickle.dump(results_all_query,results_out)
 				results_out.close()
 
-				option_out =open(options['output_dir'] + data_name + '_' + 'options.pkl', 'w') 
+				option_out =open(options['output_file_name'] + '_options.pkl', 'w') 
 				pickle.dump(results_all_query,option_out)
 				option_out.close()
 

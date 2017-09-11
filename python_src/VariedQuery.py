@@ -29,6 +29,7 @@ def VariedQuery(options,X_test,Y_test):
 		results_all_query[alg_name]['que']=[]; results_all_query[alg_name]['stdQue']=[]
 		results_all_query[alg_name]['reg']=[]; results_all_query[alg_name]['stdReg']=[]
 		results_all_query[alg_name]['time']=[]; results_all_query[alg_name]['stdTime']=[]	
+		results_all_query[alg_name]['acc']=[]; results_all_query[alg_name]['stdAcc']=[]	
 	
 	forecaster_options['eta'] = math.sqrt(8*log(options['num_all_experts'])/n)
 	
