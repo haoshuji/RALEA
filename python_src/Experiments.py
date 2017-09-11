@@ -169,7 +169,7 @@ def BatchVariedQuery(options):
 				results_out.close()
 
 				option_out =open(options['output_file_name'] + '_options.pkl', 'w') 
-				pickle.dump(results_all_query,option_out)
+				pickle.dump(options,option_out)
 				option_out.close()
 
 				# write the fixed query ratio to file

@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.pylab import figure
+import pickle
 
 def PlotVariedQuery(results,options):
     data_name = options['data_name']
@@ -172,3 +173,9 @@ def PlotVariedQuery(results,options):
     plt.close(fig) 
 
     pass
+if __name__ == '__main__':
+    results = pickle.load(open('../results/AAAI2018/a8a_0_l0_res.pkl','r'))
+    options = pickle.load(open('../results/AAAI2018/a8a_0_l0_options.pkl','r'))
+    import pdb
+    pdb.set_trace()
+    PlotVariedQuery(results, options)
