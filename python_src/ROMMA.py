@@ -6,12 +6,13 @@ from numpy import linalg as LA
 def ROMMA(X,Y):
 	err = 0	
 	n,d = X.shape
-	w = np.zeros(d)
-	
+	w = np.zeros((1,d))
 	for t in range(n):
 		yt = Y[t]
 		xt = X[t,:]		
-		ft = np.dot(xt,w)
+		import pdb
+		# pdb.set_trace()
+		ft = np.dot(xt,w.transpose())[0,0]
 		hat_yt=np.sign(ft)
 		if hat_yt==0:
 			hat_yt=1

@@ -1,4 +1,5 @@
-from svmutil import *
+# from svmutil import *
+from sklearn.datasets import load_svmlight_file
 import numpy as np
 
 def ListDicToArray(XList):	
@@ -20,10 +21,18 @@ def ListDicToArray(XList):
 	return XArray
 
 def ImportData(data_dir,data_name):	
-	Y,X = svm_read_problem(data_dir+data_name)
+	# Y,X = svm_read_problem(data_dir+data_name)
 	#change list Y, X to numpy array
-	X = ListDicToArray(X)
-	Y = np.asarray(Y)
+	# X = ListDicToArray(X)
+	# Y = np.asarray(Y)
+
+	data = load_svmlight_file(data_dir+data_name)
+	X = data[0]
+	Y = data[1]
+	X = X.todense()
+
+	import pdb
+	# pdb.set_trace()
 	n,d = X.shape
 	if (n != Y.size):
 		print "X's length is not consistent with Y's length"
@@ -32,12 +41,18 @@ def ImportData(data_dir,data_name):
 	min_Y = np.amin(Y)
 	max_Y = np.amax(Y)
 
-	# change the label to {-1,+1}
+	########################################################
+	########################################################
+	# change the label to {-1,+1} in order to train the five simulated experts, 
+	# change back to {0,1} when call GF and EWAF
 	if min_Y != -1 or max_Y != +1:		
 		min_Y_ind = (Y==min_Y)
 		max_Y_ind = (Y==max_Y)		
 		Y[min_Y_ind] = -1
 		Y[max_Y_ind] = +1	
+	########################################################
+	########################################################
+
 	min_Y = np.amin(Y)
 	max_Y = np.amax(Y)
 

@@ -118,10 +118,20 @@ def BatchVariedQuery(options):
 			Y_test = Y[p[num_train:n]]
 
 			acc1,w1 = PERCEPTRON(X_train,Y_train)		
+			print("PERCEPTRON: {}".format(acc1))
+
 			acc2,w2 = ROMMA(X_train,Y_train)
+			print("ROMMA: {}".format(acc2))
+
 			acc3,w3 = ALMA(X_train,Y_train)		
+			print("ALMA: {}".format(acc3))
+
 			acc4,w4 = PA1(X_train,Y_train)		
+			print("PA1: {}".format(acc4))
+
 			acc5,w5 = AROW(X_train,Y_train)
+			print("AROW: {}".format(acc5))
+
 			# print 'Experts Accuracy', acc1,acc2,acc3,acc4,acc5
 			W_normal = np.concatenate((np.reshape(w1,(1,d)),np.reshape(w2,(1,d)),\
 				np.reshape(w3,(1,d)),np.reshape(w4,(1,d)),np.reshape(w5,(1,d))),axis=0)
@@ -147,13 +157,20 @@ def BatchVariedQuery(options):
 					W_all = np.concatenate((W_all,np.zeros((1,d))),axis=0)
 				options['W'] = W_all
 				
-
-				results_all_query = VariedQuery(options,X_test,Y_test)			
+				########################################################
+				########################################################
+				results_all_query = VariedQuery(options,X_test,Y_test)	
+				########################################################
+				########################################################		
 				
 				# write the varied query ratio to file				
-				out =open(options['output_file_name']+'.txt','w') 
-				pickle.dump(results_all_query,out)
-				out.close()
+				results_out =open(options['output_file_name']+'.pkl','w') 
+				pickle.dump(results_all_query,results_out)
+				results_out.close()
+
+				option_out =open(options['output_dir'] + data_name + '_' + 'options.pkl', 'w') 
+				pickle.dump(results_all_query,option_out)
+				option_out.close()
 
 				# write the fixed query ratio to file
 				with open(options['output_file_name']+'_fixed.txt','w') as fin:
@@ -161,7 +178,7 @@ def BatchVariedQuery(options):
 						fin.write('\n')
 						fin.write(('& Algorithm').ljust(12))  
 						fin.write(('& Query(\%)').ljust(20))
-						fin.write(('& Regret(\%)').ljust(20))
+						fin.write(('& Accuracy(\%)').ljust(20))
 						fin.write(('& Time(s)').ljust(15))
 						fin.write(('delta').ljust(0))
 						fin.write('\n')
@@ -169,7 +186,7 @@ def BatchVariedQuery(options):
 							# print alg_name, results_all_query[alg_name]['que'][i]
 							fin.write(('& '+alg_name).ljust(12))
 							fin.write(('& '+str((round(results_all_query[alg_name]['que'][i]*100,3)))+'$\pm$'+str(round(results_all_query[alg_name]['stdQue'][i]*100,3))).ljust(20))
-							fin.write(('& '+str((results_all_query[alg_name]['reg'][i]))+'$\pm$'+str((results_all_query[alg_name]['stdReg'][i]))).ljust(20))
+							fin.write(('& '+str((results_all_query[alg_name]['acc'][i]))+'$\pm$'+str((results_all_query[alg_name]['stdAcc'][i]))).ljust(20))
 							fin.write(('& '+str((results_all_query[alg_name]['time'][i]))).ljust(15))
 							if alg_name in ['AEWAF','RAEWAF','AGF','RAGF']:
 								fin.write((str(options[data_name][alg_name][i])).ljust(0))
@@ -194,8 +211,8 @@ def BatchVariedQuery(options):
 if __name__ == '__main__':
  	
  	options={}
- 	options['data_dir'] = 'D:/Copy/dataset/'	
-	options['output_dir'] = '../results/'
+ 	options['data_dir'] = '../data/'	
+	options['output_dir'] = '../results/AAAI2018/'
 	
 	try:
 	    os.makedirs(options['output_dir'])

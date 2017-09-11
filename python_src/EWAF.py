@@ -5,8 +5,12 @@ import math
 import matplotlib.pyplot as plt
 from matplotlib.pylab import figure
 def EWAF(X,Y,options):
-
+	########################################################
+	########################################################
+	# Change label space from {-1, +1} to {0, 1}
 	Y=(Y+1)/2
+	########################################################
+	########################################################
 
 	n,d = X.shape
 	eta = options['eta']	
@@ -17,10 +21,12 @@ def EWAF(X,Y,options):
 	delta = options['delta']
 	loss_experts = np.zeros(N)
 	loss_forecaster = 0
-	loss_experts_queried = np.zeros(N);
-	num_queried = 0
+	loss_experts_queried = np.zeros((1,N))
+	loss_experts_unqueried = np.zeros((1,N))
+	num_queried = 1
 	num_non_queried = 0	
-	
+	num_accurate_preditcted = 0
+
 	wij_list=[]
 
 	random.seed(time.time())
@@ -29,15 +35,18 @@ def EWAF(X,Y,options):
 		xt = X[t]
 		yt = Y[t]
 
-		# transfer the prediction in [-1,+1] to [0,+1]
-		# print N, W.shape
-		f=np.maximum(np.zeros(N),np.minimum(np.ones(N), np.dot(W,xt)+0.5))	
+		# receive annotations and transfer the annotation from [-1,+1] to [0,+1]
+		import pdb
+		# pdb.set_trace()
+		f=np.maximum(np.zeros(N),np.minimum(np.ones(N), np.dot(W,xt.transpose()).flatten()+0.5))	
+		# add noisy annotations
 		for i in range(options['num_noisy_experts']):
-			# print options['num_noisy_experts']
 			f[5+i]=random.random()
 		
-		_p_t = np.dot(f,w)		
+		_p_t = np.dot(f,w.transpose())[0,0]		
 		
+		_hat_y_t = 1 if _p_t >= 0.5 else 0
+
 		_query_or_not=False
 		
 		if options['alg_name']=='EWAF':			
@@ -56,7 +65,7 @@ def EWAF(X,Y,options):
 
 			for i in range(N):
 				for j in range(N):					
-					_rel[i,j] = math.exp( -eta*((1+_mu)*loss_experts_queried[i] + loss_experts_queried[j]) )
+					_rel[i,j] = math.exp( -eta*((1+_mu)*loss_experts_queried[0,i] + loss_experts_queried[0,j]) )
 			# _rel = np.power(_rel,-eta)
 			# # print sumRel,f
 			# if  _rel.sum()== 0.0:
@@ -67,7 +76,9 @@ def EWAF(X,Y,options):
 			_rel_fij = 0.0
 			for i in range(N):
 				for j in range(i,N):
-					abs_fij = abs(f[i]-f[j])
+					import pdb
+					# pdb.set_trace()
+					abs_fij = abs(f[0,i]-f[0,j])
 					_rel_fij = _rel_fij + _rel[i,j]*abs_fij
 					if i != j:
 						_rel_fij = _rel_fij + _rel[j,i]*abs_fij		
@@ -84,15 +95,20 @@ def EWAF(X,Y,options):
 		loss_experts = loss_experts + _ell_experts
 		loss_forecaster = loss_forecaster + abs(_p_t-yt)
 		
+		if _hat_y_t == yt:
+			num_accurate_preditcted += 1
+
 		if _query_or_not:
 			num_queried += 1			
-			w = w*np.exp(-eta*_ell_experts)
+			loss_experts_queried = loss_experts_queried+_ell_experts
+			# w = w*np.exp(-eta*_ell_experts)
+			w = np.exp(-eta*loss_experts_queried)
 			sum_w = np.sum(w)
 			w = w/sum_w
-			loss_experts_queried = loss_experts_queried+_ell_experts
 		else: 
 			num_non_queried += 1		
 		
+		# loss_experts_unqueried = (float(num_non_queried)/float(num_queried))*loss_experts_queried
 
 	end = time.time()
 	reg = loss_forecaster - np.amin(loss_experts)	
@@ -109,4 +125,4 @@ def EWAF(X,Y,options):
 	# 		plt.savefig(options['output_file_name']+'_his'+'.pdf')
 	# 		plt.close(fig) 
 	# 	# print min(wij_list),max(wij_list)
-	return float(num_queried)/n, float(reg)/n, (end-start)	
+	return float(num_queried)/n, float(reg)/n, (end-start), float(num_accurate_preditcted)/n	

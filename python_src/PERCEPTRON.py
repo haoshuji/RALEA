@@ -4,16 +4,14 @@ import sys
 
 def PERCEPTRON(X,Y):
 	n,d = X.shape
-	w = np.zeros(d)
+	w = np.zeros((1,d))
 	err=0
 	start = time.time()
 	for t in range(n):
 		yt = Y[t]
 		xt = X[t]
-		# print xt, yt
-		# exit(1)
-		# print xt.shape, w.shape
-		hat_yt=np.sign(np.dot(xt,w))
+		ft = np.dot(xt,w.transpose())[0,0]
+		hat_yt = np.sign(ft)
 		if hat_yt==0:
 			hat_yt=1
 		if hat_yt != yt:
