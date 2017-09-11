@@ -6,7 +6,12 @@ import matplotlib.pyplot as plt
 from matplotlib.pylab import figure
 def GF(X,Y,options):
 
+	########################################################
+	########################################################
+	# Change label space from {-1, +1} to {0, 1}
 	Y=(Y+1)/2
+	########################################################
+	########################################################
 	# print min(Y),max(Y)
 	n,d = X.shape
 	eta = options['eta']	
@@ -18,21 +23,23 @@ def GF(X,Y,options):
 	w = np.ones(N)/N
 	delta = options['delta']
 	
-	loss_experts = np.zeros(N)
+	loss_experts = np.zeros((1,N))
 	loss_forecaster = 0
-	loss_experts_queried = np.zeros(N)
+	loss_experts_queried = np.zeros((1,N))
 	loss_forecaster_queried = 0
 	num_queried = 0
 	num_non_queried = 0	
 	
+	num_accurate_preditcted = 0
+
 	random.seed(time.time())
 	start = time.time()
 	for t in range(n):
-		_x_t = X[t]
-		_y_t = Y[t]
+		xt = X[t]
+		yt = Y[t]
 		
 		# transfer the prediction in [-1,+1] to [0,+1]
-		_f=np.maximum(np.zeros(N),np.minimum(np.ones(N), np.dot(W,_x_t)+0.5))			
+		_f=np.maximum(np.zeros(N), np.minimum(np.ones(N), np.dot(W,xt.transpose()).flatten()+0.5))			
 		for i in range(options['num_noisy_experts']):
 			_f[5+i]=random.random()				
 		
@@ -49,6 +56,8 @@ def GF(X,Y,options):
 		_bar_p_t = 0.5+math.log(_sum_temp_alpha/_sum_temp_beta)*1/(2*eta)
 		_hat_p_t = max(0,min(1,_bar_p_t))
 
+		_hat_y_t = 1 if _hat_p_t >= 0.5 else 0
+
 		_query_or_not=False
 		
 		if options['alg_name']=='GF':			
@@ -64,11 +73,11 @@ def GF(X,Y,options):
 			ratio = float(num_non_queried)/(num_queried+1)
 			mu = np.zeros(N)
 			for i in range(N):
-				mu[i]=math.exp(-eta*((1+ratio)*loss_experts_queried[i]+_ell_0[i]))		
+				mu[i]=math.exp(-eta*((1+ratio)*loss_experts_queried[0,i]+_ell_0[0,i]))		
 			
 			_numerator=0
 			for i in range(N):
-				_numerator = _numerator +  mu[i]*math.exp(2*eta*abs(_f[i]-_bar_p_t))
+				_numerator = _numerator +  mu[i]*math.exp(2*eta*abs(_f[0,i]-_bar_p_t))
 			
 			max_ft = 1/(2*eta)*math.log(_numerator/mu.sum())
 			
@@ -79,16 +88,17 @@ def GF(X,Y,options):
 			if random.random() <= delta:
 				_query_or_not = True
 		
-		_ell_experts = np.absolute(_f-_y_t)
+		_ell_experts = np.absolute(_f-yt)
 		loss_experts = loss_experts + _ell_experts
 
-		_ell_forecaster = abs(_hat_p_t-_y_t)
+		_ell_forecaster = abs(_hat_p_t-yt)
 		loss_forecaster = loss_forecaster + _ell_forecaster
+
+		if _hat_y_t == yt:
+			num_accurate_preditcted += 1
 
 		if _query_or_not:
 			num_queried += 1			
-			w = w*np.exp(-eta*_ell_experts)
-			w = w/np.sum(w)	
 			loss_experts_queried = loss_experts_queried+_ell_experts
 			loss_forecaster_queried = loss_forecaster_queried + _ell_forecaster
 		else: 
@@ -110,4 +120,4 @@ def GF(X,Y,options):
 	end = time.time()
 	reg = loss_forecaster - np.amin(loss_experts)	
 	# print num_queried
-	return float(num_queried)/n, float(reg)/n, (end-start)	
+	return float(num_queried)/n, float(reg)/n, (end-start), float(num_accurate_preditcted)/n

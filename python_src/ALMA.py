@@ -5,7 +5,7 @@ import sys
 from numpy import linalg as LA
 def ALMA(X,Y):
 	n,d = X.shape
-	w = np.zeros(d)
+	w = np.zeros((1,d))
 	alpha = 0.9
 	B = 1/alpha
 	C = math.sqrt(2)
@@ -17,7 +17,7 @@ def ALMA(X,Y):
 		yt = Y[t]
 		xt = X[t,:]
 		# xt = xt/LA.norm(xt)
-		ft = np.dot(xt,w)
+		ft = np.dot(xt,w.transpose())[0,0]
 		hat_yt=np.sign(ft)
 		if hat_yt==0:
 			hat_yt=1
